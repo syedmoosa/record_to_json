@@ -10,9 +10,7 @@
 -author("syedmoosa").
 
 %% API
--export([]).
-
--export([convert_to_tuples/2]).
+-export([convert_to_tuples/2,convert_to_record/2]).
 
 
 convert_to_tuples(Record,FieldType)->
@@ -77,3 +75,62 @@ convert_field_type(Field,Type) ->
     list -> erlang:atom_to_list(Field);
     atom -> Field
   end.
+
+
+%%==========================================================================================
+%%            To convert list of tuples to record
+%%==========================================================================================
+convert_to_record(RecName,TupleList)->
+  try
+    case ets:lookup(saved_records,RecName) of
+      [] ->
+        {error, <<"ets table unavailable">>};
+      [{RecName,RecordInfo}] -> convert_to_record(RecordInfo,TupleList,[RecName])
+    end
+  catch
+    Exception:Reason -> {caught,Exception,Reason}
+  end.
+
+
+convert_to_record(RecordInfo,TupleList,RecName)->
+  convert_to_record(RecordInfo,TupleList,RecName,[]).
+
+convert_to_record([],[],Acc,_Temp)->
+  erlang:list_to_tuple(lists:reverse(Acc));
+
+convert_to_record([],_TupleList,Acc,_Temp)->
+  erlang:list_to_tuple(lists:reverse(Acc));
+
+convert_to_record([{_RH,DefaultValue}|RT],[],Acc,[])->
+  convert_to_record(RT,[],[DefaultValue|Acc],[]);
+
+convert_to_record([_RH|RT],[],Acc,[])->
+  convert_to_record(RT,[],[undefined|Acc],[]);
+
+convert_to_record([{RH,_DefaultValue}|RT],[],Acc,[{RH,Value}|Rest])->
+  convert_to_record(RT,[],[Value|Acc],Rest);
+
+convert_to_record([RH|RT],[],Acc,[{RH,Value}|Rest])->
+  convert_to_record(RT,[],[Value|Acc],Rest);
+
+convert_to_record([{_RH,DefaultValue}|RT],[],Acc,Temp)->
+  convert_to_record(RT,Temp,[DefaultValue|Acc],[]);
+
+convert_to_record([_RH|RT],[],Acc,Temp)->
+  convert_to_record(RT,Temp,[undefined|Acc],[]);
+
+convert_to_record([{Key,_DefaultValue}|Rest],[{Key,Value}|T],Acc,[])->
+  convert_to_record(Rest,T,[Value|Acc],[]);
+
+convert_to_record([Key|Rest],[{Key,Value}|T],Acc,[])->
+  convert_to_record(Rest,T,[Value|Acc],[]);
+
+convert_to_record([{Key,_DefaultValue}|Rest],[{Key,Value}|T],Acc,Temp)->
+  convert_to_record(Rest,T++Temp,[Value|Acc],[]);
+
+convert_to_record([Key|Rest],[{Key,Value}|T],Acc,Temp)->
+  convert_to_record(Rest,T++Temp,[Value|Acc],[]);
+
+convert_to_record(RecordInfo,[H|T],Acc,Temp)->
+  convert_to_record(RecordInfo,T,Acc,[H|Temp]).
+
