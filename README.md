@@ -15,7 +15,7 @@ An Erlang library to convert records to json at runtime.
  ```erlang
  >record_to_json:convert_to_record(student, [{name, <<"syed">>}, {roll_no,<<"s002">>}]).
  >[{student, <<"syed">>, <<"s002">>}]
- 
+``` 
  
  # To convert record to list of tuples
       record_to_json:convert_to_list_of_tuples(Type :: atom(), ListOfTuples :: list())
@@ -24,7 +24,7 @@ An Erlang library to convert records to json at runtime.
  ```erlang
  >record_to_json:convert_to_list_of_tuples(binary, {student, <<"syed">>, <<"s002">>}).
  >[{name, <<"syed">>}, {roll_no,<<"s002">>}]
- 
+ ```
  
  We can convert the list of tuples to json using jsx library.
  
