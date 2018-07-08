@@ -19,13 +19,16 @@ convert_to_tuples(Record,FieldType)->
     [RecordName|RecList] = erlang:tuple_to_list(Record),
     case ets:lookup(saved_records,RecordName) of
       [] ->
-        {error, <<"">>};
+        {error, <<"Record Unavailable!">>};
       [{RecordName,RecordInfo}]->
         convert(RecList, RecordInfo,FieldType);
       _-> {error, <<"">>}
     end
   catch
-    Exception:Reason -> {caught,Exception,Reason}
+    Exception:Reason ->
+      {caught,Exception,Reason},
+      io:format("~nSomething Went Wrong!~n"),
+      io:format("Exception ~p Reason ~p",[Exception,Reason])
   end.
 
 convert(Record,RecordInfo,FieldType)->

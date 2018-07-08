@@ -17,7 +17,7 @@
 start(_StartType, _StartArgs) ->
     case application:get_env(record_to_json,records_file) of
         {ok,Path} ->
-            io:format("Got from environment ~p~n",[Path]),
+            io:format("Path setted in environment: ~p~n",[Path]),
             try
                 Res = rec_to_json_config:set(Path),
                 io:format("Result ~p~n",[Res])
@@ -28,7 +28,6 @@ start(_StartType, _StartArgs) ->
 
         undefined ->
             io:format("Record Path was not set in environment")
-
     end,
     record_to_json_sup:start_link().
 
