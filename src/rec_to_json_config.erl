@@ -10,8 +10,10 @@
 -author("syedmoosa").
 
 %% API
--export([set/1]).
--define(TABLENAME,saved_records).
+-export([set/1, convert_to_binary/1]).
+
+-define(TABLENAME, saved_records).
+-define(C(Field), convert_to_binary(Field)).
 
 set(RecordFile)->
   save(RecordFile).
@@ -53,7 +55,7 @@ analyze_forms([Form | Forms],Acc)->
       case erl_syntax_lib:analyze_attribute(Form) of
         {record,{RecordName,RecordFields}}->
           {ok, RecordDetails} = get_fields({RecordName, RecordFields}),
-          analyze_forms(Forms,[{RecordName, RecordDetails} | Acc]);
+          analyze_forms(Forms, [{?C(RecordName), RecordDetails} | Acc]);
         _ ->
           analyze_forms(Forms, Acc)
       end;
@@ -77,22 +79,22 @@ get_fields(RecordName,[RecordField |RFields],Acc)->
 
 
 extract_field_default({FieldName,{none,_}})->
-  {only_field,FieldName};
+  {only_field, ?C(FieldName)};
 
 extract_field_default({FieldName,{{nil,_},{type,_,list,_}}})->
-  {field_with_default,{FieldName,[]}};
+  {field_with_default,{?C(FieldName),[]}};
 
-extract_field_default({FieldName,{{nil,_}, none}})->
-  {field_with_default,{FieldName,[]}};
+extract_field_default({FieldName, {{nil,_}, none}})->
+  {field_with_default,{?C(FieldName), []}};
 
 extract_field_default({FieldName,{{_,_,{record,_,_,_}=Record,_},{type,_,list,_}}})->
-  {field_with_default,{FieldName,[],Record}};
+  {field_with_default,{?C(FieldName), [], Record}};
 
 
 extract_field_default({FieldName,{Default,_Type}}) when is_tuple(Default)->
   case Default of
-    {_, _, DefaultValue} -> {field_with_default, {FieldName,DefaultValue}};
-    {record,_,_DefaultValue,_} -> {field_with_default, {FieldName,Default}}
+    {_, _, DefaultValue} -> {field_with_default, {?C(FieldName),DefaultValue}};
+    {record,_,_DefaultValue,_} -> {field_with_default, {?C(FieldName),Default}}
   end.
 
 
@@ -109,6 +111,8 @@ save_records(TableName,[Record | RecordDetails]) ->
 save_records(TableName, [])->
   {ok, TableName}.
 
+convert_to_binary(FieldName)->
+  erlang:atom_to_binary(FieldName, utf8).
 
 
 
