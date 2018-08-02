@@ -7,7 +7,7 @@ An Erlang library to convert records to json at runtime.
  3. Set the following environment in your application: 
       application:set_env(***YourAppName***, records_file, *pathofhrlfile*)
  
- # To convert the record to list of tuples
+ # To convert list of tuples to record
  You can convert the record to list of tuples containing keys(record field) and values
  For example, if a record called student is mentioned in hrl file
  -record(student, {name, roll_no}).
