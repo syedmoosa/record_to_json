@@ -82,6 +82,9 @@ extract_field_default({FieldName,{none,_}})->
 extract_field_default({FieldName,{{nil,_},{type,_,list,_}}})->
   {field_with_default,{FieldName,[]}};
 
+extract_field_default({FieldName,{{nil,_}, none}})->
+  {field_with_default,{FieldName,[]}};
+
 extract_field_default({FieldName,{{_,_,{record,_,_,_}=Record,_},{type,_,list,_}}})->
   {field_with_default,{FieldName,[],Record}};
 
