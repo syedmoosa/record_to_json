@@ -99,7 +99,6 @@ extract_field_default({FieldName,{Default,_Type}}) when is_tuple(Default)->
 
 
 
-
 save_records(RecordDetails)->
   ets:new(?TABLENAME,[set, named_table, public,{write_concurrency,false},{read_concurrency, true}]),
   save_records(?TABLENAME,RecordDetails).
