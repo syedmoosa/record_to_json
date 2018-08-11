@@ -79,22 +79,22 @@ get_fields(RecordName,[RecordField |RFields],Acc)->
 
 
 extract_field_default({FieldName,{none,_}})->
-  {only_field, FieldName};
+  {only_field, ?C(FieldName)};
 
 extract_field_default({FieldName,{{nil,_},{type,_,list,_}}})->
-  {field_with_default,{FieldName,[]}};
+  {field_with_default,{?C(FieldName),[]}};
 
 extract_field_default({FieldName, {{nil,_}, none}})->
-  {field_with_default,{FieldName, []}};
+  {field_with_default,{?C(FieldName), []}};
 
 extract_field_default({FieldName,{{_,_,{record,_,_,_}=Record,_},{type,_,list,_}}})->
-  {field_with_default,{FieldName, [], Record}};
+  {field_with_default,{?C(FieldName), [], Record}};
 
 
 extract_field_default({FieldName,{Default,_Type}}) when is_tuple(Default)->
   case Default of
-    {_, _, DefaultValue} -> {field_with_default, {FieldName,DefaultValue}};
-    {record,_,_DefaultValue,_} -> {field_with_default, {FieldName,Default}}
+    {_, _, DefaultValue} -> {field_with_default, {?C(FieldName),DefaultValue}};
+    {record,_,_DefaultValue,_} -> {field_with_default, {?C(FieldName),Default}}
   end.
 
 
